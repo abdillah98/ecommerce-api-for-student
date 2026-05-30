@@ -11,6 +11,7 @@ import categoryRoutes from "./modules/category/category.route.js";
 import productRoutes from "./modules/product/product.route.js";
 import cartRoutes from "./modules/cart/cart.route.js";
 import purchaseRoutes from "./modules/purchase/purchase.route.js";
+import paymentMethodRoutes from "./modules/payment-method/payment-method.route.js";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/categories", categoryRoutes);
 app.use("/products", productRoutes);
 app.use("/carts", cartRoutes);
 app.use("/purchases", purchaseRoutes);
+app.use("/payment-methods", paymentMethodRoutes);
 
 app.use(errorMiddleware);
 

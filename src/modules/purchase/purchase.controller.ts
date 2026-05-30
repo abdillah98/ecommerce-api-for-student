@@ -7,15 +7,17 @@ import {
 } from "./purchase.service.js";
 import { successResponse } from "../../utils/response.js";
 import { asyncHandler } from "../../utils/async-handler.js";
-import { AppError } from "../../utils/app-error.js";
 
 export const checkoutController = asyncHandler(async (
   req: Request,
   res: Response
 ) => {
+  const { address, paymentMethodId } = req.body;
+
   const purchase = await checkout(
     req.user!.projectId,
-    req.user!.userId
+    req.user!.userId,
+    { address, paymentMethodId: Number(paymentMethodId) }
   );
 
   return successResponse(
@@ -65,7 +67,7 @@ export const updatePurchaseStatusController = asyncHandler(async (
 ) => {
   const { status } = req.body;
   if (!status) {
-    throw new AppError("Status is required", 400);
+    throw new Error("Status is required");
   }
 
   const purchase = await updatePurchaseStatus(

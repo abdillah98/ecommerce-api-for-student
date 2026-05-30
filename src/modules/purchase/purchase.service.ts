@@ -4,10 +4,42 @@ import { purchases } from "../../database/schema/purchases.js";
 import { purchaseItems } from "../../database/schema/purchase-items.js";
 import { carts } from "../../database/schema/carts.js";
 import { products } from "../../database/schema/products.js";
+import { paymentMethods } from "../../database/schema/payment-methods.js";
 import { AppError } from "../../utils/app-error.js";
 
-export async function checkout(projectId: number, userId: number) {
+interface CheckoutDTO {
+  address: string;
+  paymentMethodId: number;
+}
+
+export async function checkout(
+  projectId: number,
+  userId: number,
+  payload: CheckoutDTO
+) {
+  if (!payload.address) {
+    throw new AppError("Address is required", 400);
+  }
+  if (!payload.paymentMethodId) {
+    throw new AppError("Payment Method ID is required", 400);
+  }
+
   return await db.transaction(async (tx) => {
+    // 0. Validate payment method exists and belongs to this project
+    const pMethod = await tx
+      .select()
+      .from(paymentMethods)
+      .where(
+        and(
+          eq(paymentMethods.id, payload.paymentMethodId),
+          eq(paymentMethods.projectId, projectId)
+        )
+      );
+
+    if (!pMethod[0]) {
+      throw new AppError("Payment method not found or does not belong to this project", 400);
+    }
+
     // 1. Get cart items with product details
     const cartItems = await tx
       .select({
@@ -50,6 +82,8 @@ export async function checkout(projectId: number, userId: number) {
         userId,
         totalPrice,
         status: "pending",
+        address: payload.address,
+        paymentMethodId: payload.paymentMethodId,
       })
       .returning();
 
@@ -95,7 +129,16 @@ export async function checkout(projectId: number, userId: number) {
 
 export async function getPurchases(projectId: number, userId: number) {
   return await db
-    .select()
+    .select({
+      id: purchases.id,
+      projectId: purchases.projectId,
+      userId: purchases.userId,
+      totalPrice: purchases.totalPrice,
+      status: purchases.status,
+      address: purchases.address,
+      paymentMethodId: purchases.paymentMethodId,
+      createdAt: purchases.createdAt,
+    })
     .from(purchases)
     .where(
       and(
@@ -107,8 +150,24 @@ export async function getPurchases(projectId: number, userId: number) {
 
 export async function getPurchaseById(projectId: number, userId: number, id: number) {
   const purchaseResult = await db
-    .select()
+    .select({
+      id: purchases.id,
+      projectId: purchases.projectId,
+      userId: purchases.userId,
+      totalPrice: purchases.totalPrice,
+      status: purchases.status,
+      address: purchases.address,
+      paymentMethodId: purchases.paymentMethodId,
+      createdAt: purchases.createdAt,
+      paymentMethod: {
+        id: paymentMethods.id,
+        name: paymentMethods.name,
+        type: paymentMethods.type,
+        logoUrl: paymentMethods.logoUrl,
+      }
+    })
     .from(purchases)
+    .leftJoin(paymentMethods, eq(purchases.paymentMethodId, paymentMethods.id))
     .where(
       and(
         eq(purchases.id, id),
