@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
 		"name": "Ecommerce API - Final Project (Komprehensif)",
-		"description": "# Dokumentasi Komprehensif Ecommerce API\n\nSelamat datang di dokumentasi API untuk Proyek Akhir mata kuliah **Pemrograman Mobile 2** (Semester 4).\n\nSistem backend ini adalah sebuah **Multi-tenant E-Commerce Service** berbasis **MySQL** dan **Express (TypeScript)** yang dirancang untuk mendukung pengujian API secara terisolasi antar tim kelompok mahasiswa. \n\n## 💡 Konsep Multi-Tenant Berbasis Project\nUntuk mencegah tumpang tindih data antar kelompok mahasiswa saat menggunakan server database yang sama, arsitektur database kami dirancang dengan konsep isolasi data:\n1. Setiap tim kelompok mendaftarkan proyeknya di folder `Project` untuk mendapatkan `projectId` unik.\n2. Saat user mendaftar di folder `Auth`, user tersebut akan terikat dengan `projectId` kelompok Anda.\n3. Ketika user login, backend menghasilkan token **JSON Web Token (JWT)** yang mengemas informasi `userId`, `projectId`, dan `role` secara aman.\n4. Seluruh endpoint terproteksi selanjutnya (Kategori, Produk, Cart, Payment Method, Purchase) akan menyaring data secara otomatis berdasarkan `projectId` dari JWT token tersebut. Pengguna dari Project A tidak akan pernah bisa melihat atau memodifikasi data milik Project B.\n\n## 🛠️ Cara Otomatisasi Token di Postman\nKoleksi ini dirancang agar Anda **tidak perlu menyalin JWT token secara manual** setelah melakukan login:\n- Pada request **Login**, terdapat script otomatis (*Tests Script*) yang menangkap token dari response body server.\n- Token tersebut langsung disimpan ke dalam variabel koleksi bernama `token`.\n- Seluruh request di dalam folder terproteksi telah diatur untuk menggunakan tipe otorisasi **`Inherit auth from parent`**, yang secara otomatis melampirkan header `Authorization: Bearer {{token}}` pada setiap request secara transparan.",
+		"description": "# Dokumentasi Komprehensif Ecommerce API\n\nSelamat datang di dokumentasi API untuk Proyek Akhir mata kuliah **Pemrograman Mobile 2** (Semester 4).\n\nSistem backend ini adalah sebuah **Multi-tenant E-Commerce Service** berbasis **MySQL** dan **Express (TypeScript)** yang dirancang untuk mendukung pengujian API secara terisolasi antar tim kelompok mahasiswa. \n\n## 🌐 Server Production (Live Online)\nBackend API ini telah di-deploy secara resmi dan dapat diakses langsung secara publik tanpa perlu menjalankan local server:\n- **Base URL Utama**: `https://shop.tandurkarya.com` (Nilai Default Koleksi Ini)\n- **Base URL Lokal**: `http://localhost:3000` (Ganti variabel `baseUrl` di tab Variables jika ingin menguji lokal)\n\n## 💡 Konsep Multi-Tenant Berbasis Project\nUntuk mencegah tumpang tindih data antar kelompok mahasiswa saat menggunakan server database yang sama, arsitektur database kami dirancang dengan konsep isolasi data:\n1. Setiap tim kelompok mendaftarkan proyeknya di folder `Project` untuk mendapatkan `projectId` unik.\n2. Saat user mendaftar di folder `Auth`, user tersebut akan terikat dengan `projectId` kelompok Anda.\n3. Ketika user login, backend menghasilkan token **JSON Web Token (JWT)** yang mengemas informasi `userId`, `projectId`, dan `role` secara aman.\n4. Seluruh endpoint terproteksi selanjutnya (Kategori, Produk, Cart, Payment Method, Purchase) akan menyaring data secara otomatis berdasarkan `projectId` dari JWT token tersebut. Pengguna dari Project A tidak akan pernah bisa melihat atau memodifikasi data milik Project B.\n\n## 🛠️ Cara Otomatisasi Token di Postman\nKoleksi ini dirancang agar Anda **tidak perlu menyalin JWT token secara manual** setelah melakukan login:\n- Pada request **Login**, terdapat script otomatis (*Tests Script*) yang menangkap token dari response body server.\n- Token tersebut langsung disimpan ke dalam variabel koleksi bernama `token`.\n- Seluruh request di dalam folder terproteksi telah diatur untuk menggunakan tipe otorisasi **`Inherit auth from parent`**, yang secara otomatis melampirkan header `Authorization: Bearer {{token}}` pada setiap request secara transparan.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"auth": {
@@ -758,13 +758,15 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "http://localhost:3000",
-			"type": "string"
+			"value": "https://shop.tandurkarya.com",
+			"type": "string",
+			"description": "URL dasar API. Gunakan 'https://shop.tandurkarya.com' untuk production online atau 'http://localhost:3000' untuk server lokal Anda."
 		},
 		{
 			"key": "token",
 			"value": "",
-			"type": "string"
+			"type": "string",
+			"description": "Token JWT. Variabel ini akan otomatis diisi oleh Test Script pasca login sukses."
 		}
 	]
 }

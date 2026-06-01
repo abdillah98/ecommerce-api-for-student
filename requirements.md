@@ -17,13 +17,20 @@ Sistem ini mendukung arsitektur **multi-tenant berbasis project**. Artinya:
 - **Runtime**: Node.js dengan TypeScript.
 - **Framework Web**: Express (v5).
 - **ORM**: Drizzle ORM (untuk interaksi database type-safe).
-- **Database**: SQLite (`better-sqlite3`).
+- **Database**: MySQL.
 - **Autentikasi**: JSON Web Token (JWT) dengan hashing password menggunakan `bcrypt`.
 - **Keamanan**: Helmet (untuk proteksi HTTP headers), CORS, dan Morgan (untuk logging request).
 
+### 🌐 Server Production (Live Online)
+Backend API ini telah di-deploy secara resmi dan dapat diakses secara publik pada URL produksi berikut:
+**`https://shop.tandurkarya.com`**
+
+> [!NOTE]
+> Mahasiswa dapat langsung menguji aplikasi mobile Android/iOS menggunakan server production ini tanpa perlu menjalankan backend secara lokal pada komputer masing-masing.
+
 ---
 
-## 2. Cara Setup & Menjalankan Proyek
+## 2. Cara Setup & Menjalankan Proyek Secara Lokal
 
 ### Prasyarat
 Pastikan Anda sudah menginstal:
@@ -46,16 +53,17 @@ Pastikan Anda sudah menginstal:
    Buat file `.env` di root direktori dan sesuaikan konfigurasinya:
    ```env
    PORT=3000
+   DATABASE_URL=mysql://username:password@host:port/database
    JWT_SECRET=super_secret_key_untuk_ecommerce_api_2026
    ```
 
 4. **Menjalankan Migrasi Database**
-   Drizzle Kit digunakan untuk mengelola skema database SQLite.
+   Drizzle Kit digunakan untuk mengelola skema database MySQL.
    ```bash
    # Membuat file migrasi baru (jika ada perubahan skema)
    npm run generate
 
-   # Menerapkan migrasi ke database.sqlite
+   # Menerapkan migrasi ke database MySQL
    npm run migrate
    ```
 
@@ -63,13 +71,13 @@ Pastikan Anda sudah menginstal:
    ```bash
    npm run dev
    ```
-   Server akan berjalan secara lokal di `http://localhost:3000`.
+   Server lokal akan berjalan di `http://localhost:3000`.
 
 ---
 
 ## 3. Entitas Database & Skema
 
-Sistem ini mendefinisikan 8 tabel utama di dalam database SQLite:
+Sistem ini mendefinisikan 8 tabel utama di dalam database MySQL:
 
 ### A. Projects (`projects`)
 Menyimpan informasi kelompok atau proyek mahasiswa.
@@ -77,72 +85,72 @@ Menyimpan informasi kelompok atau proyek mahasiswa.
 - `project_title` (Text, Not Null)
 - `project_description` (Text, Nullable)
 - `project_class` (Text, Not Null)
-- `project_team` (Text, Not Null, JSON String berisi nama & NIM anggota tim)
-- `created_at` (Text, Default `CURRENT_TIMESTAMP`)
+- `project_team` (JSON/TEXT, Not Null, berisi nama & NIM anggota tim)
+- `created_at` (Timestamp, Default `now()`)
 
 ### B. Users (`users`)
 Menyimpan data pengguna yang melakukan registrasi.
 - `id` (Integer, Primary Key, Auto Increment)
-- `project_id` (Integer, Foreign Key references `projects.id`)
+- `project_id` (Integer, references `projects.id`)
 - `name` (Text, Not Null)
 - `email` (Text, Not Null, Unique)
-- `password` (Text, Not Null, hashed)
+- `password` (Text, Not Null)
 - `role` (Text, Default `customer`)
-- `created_at` (Text, Default `CURRENT_TIMESTAMP`)
+- `created_at` (Timestamp, Default `now()`)
 
 ### C. Categories (`categories`)
 Kategori klasifikasi produk untuk setiap project.
 - `id` (Integer, Primary Key, Auto Increment)
-- `project_id` (Integer, Foreign Key references `projects.id`)
+- `project_id` (Integer, references `projects.id`)
 - `category_name` (Text, Not Null)
-- `created_at` (Text, Default `CURRENT_TIMESTAMP`)
+- `created_at` (Timestamp, Default `now()`)
 
 ### D. Products (`products`)
 Menyimpan data barang/produk yang dijual.
 - `id` (Integer, Primary Key, Auto Increment)
-- `project_id` (Integer, Foreign Key references `projects.id`)
-- `category_id` (Integer, Foreign Key references `categories.id`, Nullable)
+- `project_id` (Integer, references `projects.id`)
+- `category_id` (Integer, references `categories.id`, Nullable)
 - `product_name` (Text, Not Null)
 - `product_description` (Text, Nullable)
 - `product_price` (Real, Not Null)
 - `product_stock` (Integer, Default 0)
-- `product_image` (Text, Nullable, URL gambar)
-- `created_at` (Text, Default `CURRENT_TIMESTAMP`)
+- `product_image` (Text, Nullable)
+- `created_at` (Timestamp, Default `now()`)
 
 ### E. Carts (`carts`)
 Keranjang belanja dinamis milik setiap user.
 - `id` (Integer, Primary Key, Auto Increment)
-- `project_id` (Integer, Foreign Key references `projects.id`)
-- `user_id` (Integer, Foreign Key references `users.id`)
-- `product_id` (Integer, Foreign Key references `products.id`)
+- `project_id` (Integer, references `projects.id`)
+- `user_id` (Integer, references `users.id`)
+- `product_id` (Integer, references `products.id`)
 - `quantity` (Integer, Default 1)
-- `created_at` (Text, Default `CURRENT_TIMESTAMP`)
+- `created_at` (Timestamp, Default `now()`)
 
 ### F. Payment Methods (`payment_methods`)
 Menyimpan opsi metode pembayaran yang tersedia di bawah masing-masing project.
 - `id` (Integer, Primary Key, Auto Increment)
-- `project_id` (Integer, Foreign Key references `projects.id`)
+- `project_id` (Integer, references `projects.id`)
 - `name` (Text, Not Null)
 - `type` (Text, Not Null) -- Harus bernilai `'wallet'` atau `'bank'`
 - `logo_url` (Text, Nullable)
-- `created_at` (Text, Default `CURRENT_TIMESTAMP`)
+- `created_at` (Timestamp, Default `now()`)
 
 ### G. Purchases (`purchases`)
 Transaksi pembelian/order yang dilakukan oleh user.
 - `id` (Integer, Primary Key, Auto Increment)
-- `project_id` (Integer, Foreign Key references `projects.id`)
-- `user_id` (Integer, Foreign Key references `users.id`)
+- `project_id` (Integer, references `projects.id`)
+- `user_id` (Integer, references `users.id`)
 - `total_price` (Real, Not Null)
 - `status` (Text, Default `pending`)
 - `address` (Text, Not Null) -- Alamat pengiriman barang
-- `payment_method_id` (Integer, Foreign Key references `payment_methods.id`) -- Metode pembayaran yang dipilih
-- `created_at` (Text, Default `CURRENT_TIMESTAMP`)
+- `payment_method_id` (Integer, references `payment_methods.id`) -- Metode pembayaran yang dipilih
+- `created_at` (Timestamp, Default `now()`)
 
 ### H. Purchase Items (`purchase_items`)
 Detail item produk dari transaksi pembelian (Snapshot harga saat transaksi).
 - `id` (Integer, Primary Key, Auto Increment)
-- `purchase_id` (Integer, Foreign Key references `purchases.id`)
-- `product_id` (Integer, Foreign Key references `products.id`)
+- `purchase_id` (Integer, references `purchases.id`)
+- `product_id` (Integer, references `products.id`)
 - `quantity` (Integer, Not Null)
 - `price` (Real, Not Null)
 
@@ -822,21 +830,22 @@ Sekarang Anda siap memasukkan seluruh kumpulan endpoint API kita ke dalam area k
 3. Akan muncul kotak dialog drag-and-drop:
    - Klik **Files** untuk memilih file secara manual atau cukup drag (tarik) berkas `postman_collections.json` dari File Explorer Windows Anda dan letakkan di dalam kotak tersebut.
 4. Postman secara otomatis mendeteksi format berkas sebagai berkas koleksi Postman v2.1.
-5. Klik tombol **Import** untuk mengonfirmasi. Koleksi bernama **"Ecommerce API - Final Project"** sekarang akan muncul di tab **Collections** di panel kiri Anda.
+5. Klik tombol **Import** untuk mengonfirmasi. Koleksi bernama **"Ecommerce API - Final Project (Komprehensif)"** sekarang akan muncul di tab **Collections** di panel kiri Anda.
 
 ### Langkah 4: Menyesuaikan Variabel Koleksi (`baseUrl` & `token`)
 Koleksi ini menggunakan variabel internal agar pengujian berjalan dengan mulus tanpa mengetik token berulang kali.
-1. Klik nama koleksi **Ecommerce API - Final Project** pada panel kiri untuk membuka tab pengaturan koleksi utama.
+1. Klik nama koleksi **Ecommerce API - Final Project (Komprehensif)** pada panel kiri untuk membuka tab pengaturan koleksi utama.
 2. Di layar utama sebelah kanan, klik tab bertuliskan **Variables** di samping tab Authorization.
 3. Anda akan melihat dua baris variabel:
-   - **`baseUrl`**: Memiliki nilai default `http://localhost:3000`. Jika server port Anda berbeda (misal 5000), Anda cukup mengubah kolom *Current Value* variabel ini menjadi `http://localhost:5000`.
+   - **`baseUrl`**: Memiliki nilai awal **`https://shop.tandurkarya.com`** (Server Online Production). 
+     - **Catatan**: Jika Anda ingin menguji menggunakan server lokal komputer Anda, cukup ubah nilai kolom *Current Value* variabel `baseUrl` ini menjadi **`http://localhost:3000`** (atau sesuaikan dengan port lokal Anda).
    - **`token`**: Ini adalah penampung token JWT. Kolom *Current Value* awalnya kosong. Ini wajar, jangan diisi manual!
 4. Klik **Save** (Ctrl + S) di pojok kanan atas untuk menyimpan perubahan variabel.
 
 ### Langkah 5: Cara Menguji Endpoint & Sistem Auto-Inject Token
-Untuk mulai menguji, pastikan server Express lokal Anda sudah berjalan dengan perintah `npm run dev`.
+Untuk mulai menguji, pastikan server lokal Anda sudah berjalan (jika menguji lokal) atau komputer Anda terhubung internet (jika menguji online).
 1. **Membuat Project (Opsional)**:
-   - Buka folder **Project** -> klik **Create Project** -> klik tombol **Send**. Project ID `1` akan dibuat secara otomatis di database MySQL.
+   - Buka folder **Project** -> klik **Create Project** -> klik tombol **Send**. Project ID unik akan dibuat secara otomatis di database MySQL online/lokal.
 2. **Registrasi User Baru**:
    - Buka folder **Auth** -> klik **Register** -> sesuaikan body JSON jika perlu -> klik **Send** untuk mendaftarkan akun mahasiswa.
 3. **Login & Auto-Inject Token (KUNCI UTAMA)**:
