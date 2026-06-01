@@ -1,18 +1,14 @@
-import {
-  sqliteTable,
-  integer,
-  text
-} from "drizzle-orm/sqlite-core";
+import { mysqlTable, serial, varchar, bigint, text, timestamp } from 'drizzle-orm/mysql-core';
 
 import { projects } from "./projects.js";
 
-export const paymentMethods = sqliteTable("payment_methods", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  projectId: integer("project_id")
+export const paymentMethods = mysqlTable("payment_methods", {
+  id: serial("id").primaryKey(),
+  projectId: bigint("project_id", { mode: 'number' })
     .notNull()
     .references(() => projects.id),
-  name: text("name").notNull(),
-  type: text("type").notNull(), // wallet, bank
+  name: varchar("name", { length: 50 }).notNull(),
+  type: varchar("type", { length: 10 }).notNull(), // wallet, bank
   logoUrl: text("logo_url"),
-  createdAt: text("created_at").default("CURRENT_TIMESTAMP")
+  createdAt: timestamp("created_at").defaultNow()
 });

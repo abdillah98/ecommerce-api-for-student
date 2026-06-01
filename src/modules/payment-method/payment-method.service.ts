@@ -17,17 +17,16 @@ export async function createPaymentMethod(
     throw new AppError("Type must be either 'wallet' or 'bank'", 400);
   }
 
-  const result = await db
+  const [result] = await db
     .insert(paymentMethods)
     .values({
       projectId,
       name: payload.name,
       type: payload.type,
       logoUrl: payload.logoUrl || null,
-    })
-    .returning();
+    });
 
-  return result[0];
+  return await getPaymentMethodById(projectId, result.insertId);
 }
 
 export async function getPaymentMethods(projectId: number) {
@@ -66,7 +65,7 @@ export async function updatePaymentMethod(
     throw new AppError("Type must be either 'wallet' or 'bank'", 400);
   }
 
-  const result = await db
+  await db
     .update(paymentMethods)
     .set({
       name: payload.name !== undefined ? payload.name : existing.name,
@@ -78,10 +77,9 @@ export async function updatePaymentMethod(
         eq(paymentMethods.id, id),
         eq(paymentMethods.projectId, projectId)
       )
-    )
-    .returning();
+    );
 
-  return result[0];
+  return await getPaymentMethodById(projectId, id);
 }
 
 export async function deletePaymentMethod(projectId: number, id: number) {
@@ -91,15 +89,14 @@ export async function deletePaymentMethod(projectId: number, id: number) {
     throw new AppError("Payment method not found", 404);
   }
 
-  const result = await db
+  await db
     .delete(paymentMethods)
     .where(
       and(
         eq(paymentMethods.id, id),
         eq(paymentMethods.projectId, projectId)
       )
-    )
-    .returning();
+    );
 
-  return result[0];
+  return existing;
 }

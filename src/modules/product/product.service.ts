@@ -16,7 +16,7 @@ export async function createProduct(
   projectId: number,
   payload: CreateProductDTO
 ) {
-  const result = await db
+  const [result] = await db
     .insert(products)
     .values({
       projectId,
@@ -26,10 +26,9 @@ export async function createProduct(
       productPrice: payload.productPrice,
       productStock: payload.productStock ?? 0,
       productImage: payload.productImage || null,
-    })
-    .returning();
+    });
 
-  return result[0];
+  return await getProductById(projectId, result.insertId);
 }
 
 export async function getProducts(projectId: number, categoryId?: number) {
@@ -75,7 +74,7 @@ export async function updateProduct(
     throw new AppError("Product not found", 404);
   }
 
-  const result = await db
+  await db
     .update(products)
     .set({
       categoryId: payload.categoryId !== undefined ? payload.categoryId : existing.categoryId,
@@ -90,10 +89,9 @@ export async function updateProduct(
         eq(products.id, id),
         eq(products.projectId, projectId)
       )
-    )
-    .returning();
+    );
 
-  return result[0];
+  return await getProductById(projectId, id);
 }
 
 export async function deleteProduct(projectId: number, id: number) {
@@ -103,15 +101,14 @@ export async function deleteProduct(projectId: number, id: number) {
     throw new AppError("Product not found", 404);
   }
 
-  const result = await db
+  await db
     .delete(products)
     .where(
       and(
         eq(products.id, id),
         eq(products.projectId, projectId)
       )
-    )
-    .returning();
+    );
 
-  return result[0];
+  return existing;
 }

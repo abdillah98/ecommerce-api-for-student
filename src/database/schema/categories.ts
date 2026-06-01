@@ -1,16 +1,12 @@
-import {
-  sqliteTable,
-  integer,
-  text
-} from "drizzle-orm/sqlite-core";
+import { mysqlTable, serial, varchar, bigint, timestamp } from 'drizzle-orm/mysql-core';
 
 import { projects } from "./projects.js";
 
-export const categories = sqliteTable("categories", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  projectId: integer("project_id")
+export const categories = mysqlTable("categories", {
+  id: serial("id").primaryKey(),
+  projectId: bigint("project_id", { mode: 'number' })
     .notNull()
     .references(() => projects.id),
-  categoryName: text("category_name").notNull(),
-  createdAt: text("created_at").default("CURRENT_TIMESTAMP")
+  categoryName: varchar("category_name", { length: 30 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow()
 });

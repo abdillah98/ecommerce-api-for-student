@@ -1,18 +1,15 @@
-import {
-  sqliteTable,
-  integer,
-  text
-} from "drizzle-orm/sqlite-core";
+
+import { mysqlTable, serial, int, timestamp, bigint } from 'drizzle-orm/mysql-core';
 
 import { projects } from "./projects.js";
 import { users } from "./users.js";
 import { products } from "./products.js";
 
-export const carts = sqliteTable("carts", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  projectId: integer("project_id").notNull().references(() => projects.id),
-  userId: integer("user_id").notNull().references(() => users.id),
-  productId: integer("product_id").notNull().references(() => products.id),
-  quantity: integer("quantity").default(1),
-  createdAt: text("created_at").default("CURRENT_TIMESTAMP")
+export const carts = mysqlTable("carts", {
+  id: serial("id").primaryKey(),
+  projectId: bigint("project_id", { mode: 'number' }).notNull().references(() => projects.id),
+  userId: bigint("user_id", { mode: 'number' }).notNull().references(() => users.id),
+  productId: bigint("product_id", { mode: 'number' }).notNull().references(() => products.id),
+  quantity: int("quantity").default(1),
+  createdAt: timestamp("created_at").defaultNow()
 });

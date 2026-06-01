@@ -2,39 +2,29 @@ import { db } from "./database/db.js";
 import { projects } from "./database/schema/projects.js";
 
 async function test() {
-
   await db.insert(projects).values({
     projectTitle: "Kelompok A",
-
     projectDescription: "Project Ecommerce",
-
     projectClass: "IAB23",
-
-    projectTeam: JSON.stringify([
+    projectTeam: [
       {
         name: "Andi",
-        nim: "123232"
+        role: "Developer"
       },
       {
         name: "Budi",
-        nim: "121323"
+        role: "Designer"
       },
       {
         name: "Citra",
-        nim: "433221"
+        role: "Manager"
       }
-    ])
+    ]
   });
 
   const data = await db.select().from(projects);
 
-  console.log(
-    data.map(project => ({
-      ...project,
-
-      projectTeam: JSON.parse(project.projectTeam)
-    }))
-  );
+  console.log(data);
 }
 
 test();

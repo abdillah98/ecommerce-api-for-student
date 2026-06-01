@@ -1,15 +1,15 @@
-import {
-  sqliteTable,
-  integer,
-  text
-} from "drizzle-orm/sqlite-core";
+import { mysqlTable, serial, varchar, timestamp, json } from 'drizzle-orm/mysql-core';
 
-export const projects = sqliteTable("projects", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  projectTitle: text("project_title").notNull(),
-  projectDescription: text("project_description"),
-  projectClass: text("project_class").notNull(),
-  projectTeam: text("project_team").notNull(),
-  createdAt: text("created_at")
-    .default("CURRENT_TIMESTAMP")
+export interface TeamMember {
+  name: string;
+  role: string;
+}
+
+export const projects = mysqlTable("projects", {
+  id: serial("id").primaryKey(),
+  projectTitle: varchar("project_title", { length: 255 }).notNull(),
+  projectDescription: varchar("project_description", { length: 255 }),
+  projectClass: varchar("project_class", { length: 100 }).notNull(),
+  projectTeam: json('project_team').$type<TeamMember[]>().notNull(),
+  createdAt: timestamp("created_at").defaultNow()
 });

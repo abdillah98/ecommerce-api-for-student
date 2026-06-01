@@ -1,6 +1,10 @@
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
+import { drizzle } from 'drizzle-orm/mysql2';
+import mysql from 'mysql2/promise';
+import dotenv from 'dotenv';
 
-const sqlite = new Database("database.sqlite");
+dotenv.config();
 
-export const db = drizzle(sqlite);
+// Membuat koneksi pool ke database MySQL menggunakan URL dari .env
+const connection = await mysql.createConnection(process.env.DATABASE_URL as string);
+
+export const db = drizzle(connection);

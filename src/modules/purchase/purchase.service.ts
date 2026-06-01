@@ -75,7 +75,7 @@ export async function checkout(
     }
 
     // 3. Create purchase
-    const purchaseResult = await tx
+    const [result] = await tx
       .insert(purchases)
       .values({
         projectId,
@@ -84,10 +84,14 @@ export async function checkout(
         status: "pending",
         address: payload.address,
         paymentMethodId: payload.paymentMethodId,
-      })
-      .returning();
+      });
 
-    const newPurchase = purchaseResult[0];
+    const insertedPurchase = await tx
+      .select()
+      .from(purchases)
+      .where(eq(purchases.id, result.insertId));
+
+    const newPurchase = insertedPurchase[0];
     if (!newPurchase) {
       throw new AppError("Failed to create purchase", 500);
     }
@@ -225,11 +229,15 @@ export async function updatePurchaseStatus(
     throw new AppError("Purchase not found", 404);
   }
 
-  const result = await db
+  await db
     .update(purchases)
     .set({ status })
-    .where(eq(purchases.id, id))
-    .returning();
+    .where(eq(purchases.id, id));
+
+  const result = await db
+    .select()
+    .from(purchases)
+    .where(eq(purchases.id, id));
 
   return result[0];
 }

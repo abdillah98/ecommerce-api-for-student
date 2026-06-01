@@ -66,7 +66,7 @@ export async function register(
       10
     );
 
-  const result =
+  const [result] =
     await db
       .insert(users)
       .values({
@@ -74,10 +74,14 @@ export async function register(
         name: payload.name,
         email: payload.email,
         password: hashedPassword
-      })
-      .returning();
+      });
 
-  const user = result[0];
+  const insertedUser = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, result.insertId));
+
+  const user = insertedUser[0];
 
   if (!user) {
 

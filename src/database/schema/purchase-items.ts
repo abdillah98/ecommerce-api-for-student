@@ -1,16 +1,12 @@
-import {
-  sqliteTable,
-  integer,
-  real
-} from "drizzle-orm/sqlite-core";
+import { mysqlTable, serial, decimal, int, bigint } from 'drizzle-orm/mysql-core';
 
 import { purchases } from "./purchases.js";
 import { products } from "./products.js";
 
-export const purchaseItems = sqliteTable("purchase_items", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  purchaseId: integer("purchase_id").notNull().references(() => purchases.id),
-  productId: integer("product_id").notNull().references(() => products.id),
-  quantity: integer("quantity").notNull(),
-  price: real("price").notNull()
+export const purchaseItems = mysqlTable("purchase_items", {
+  id: serial("id").primaryKey(),
+  purchaseId: bigint("purchase_id", { mode: 'number' }).notNull().references(() => purchases.id),
+  productId: bigint("product_id", { mode: 'number' }).notNull().references(() => products.id),
+  quantity: int("quantity").notNull(),
+  price: decimal("price", { precision: 10, scale: 2, mode: 'number' }).notNull()
 });

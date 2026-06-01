@@ -44,27 +44,35 @@ export async function addToCart(
   const quantityToAdd = payload.quantity ?? 1;
 
   if (existing[0]) {
-    const updated = await db
+    await db
       .update(carts)
       .set({
         quantity: (existing[0].quantity ?? 0) + quantityToAdd,
       })
-      .where(eq(carts.id, existing[0].id))
-      .returning();
+      .where(eq(carts.id, existing[0].id));
+      
+    const updated = await db
+      .select()
+      .from(carts)
+      .where(eq(carts.id, existing[0].id));
     return updated[0];
   }
 
-  const result = await db
+  const [result] = await db
     .insert(carts)
     .values({
       projectId,
       userId,
       productId: payload.productId,
       quantity: quantityToAdd,
-    })
-    .returning();
+    });
 
-  return result[0];
+  const inserted = await db
+    .select()
+    .from(carts)
+    .where(eq(carts.id, result.insertId));
+
+  return inserted[0];
 }
 
 export async function getCart(projectId: number, userId: number) {
@@ -116,11 +124,15 @@ export async function updateCartItem(
     throw new AppError("Cart item not found", 404);
   }
 
-  const result = await db
+  await db
     .update(carts)
     .set({ quantity })
-    .where(eq(carts.id, id))
-    .returning();
+    .where(eq(carts.id, id));
+
+  const result = await db
+    .select()
+    .from(carts)
+    .where(eq(carts.id, id));
 
   return result[0];
 }
@@ -145,12 +157,11 @@ export async function deleteCartItem(
     throw new AppError("Cart item not found", 404);
   }
 
-  const result = await db
+  await db
     .delete(carts)
-    .where(eq(carts.id, id))
-    .returning();
+    .where(eq(carts.id, id));
 
-  return result[0];
+  return existing[0];
 }
 
 export async function clearCart(projectId: number, userId: number) {

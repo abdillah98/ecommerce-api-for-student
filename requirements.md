@@ -656,14 +656,6 @@ Endpoint metode pembayaran di-scope berdasarkan `projectId` dari user yang login
 
 #### A. Checkout Keranjang (`POST /purchases`)
 Melakukan transaksi checkout seluruh item di dalam cart saat ini.
-- **Proses Sistem**:
-  1. Validasi keberadaan dan kepemilikan `paymentMethodId` di bawah `projectId` yang sama.
-  2. Validasi kecukupan stok masing-masing produk. Jika stok tidak cukup, transaksi dibatalkan (Rollback).
-  3. Kalkulasi `totalPrice` otomatis berdasarkan harga aktual produk.
-  4. Mengurangi stok produk yang dibeli.
-  5. Menyimpan detail transaksi termasuk `address` (alamat kirim) dan `paymentMethodId`.
-  6. Menyalin item cart ke data transaksi (`purchase_items`).
-  7. Mengosongkan cart user secara otomatis.
 - **Request Body**:
   ```json
   {
@@ -797,3 +789,60 @@ Contoh kode status HTTP yang digunakan:
 - `401 Unauthorized`: Token JWT tidak valid atau tidak disertakan.
 - `404 Not Found`: Produk, kategori, metode pembayaran, atau transaksi tidak ditemukan.
 - `500 Internal Server Error`: Masalah koneksi basis data atau kesalahan tak terduga pada server.
+
+---
+
+## 6. Panduan Lengkap Import Koleksi Postman
+
+Mahasiswa dapat menguji API ini dengan mudah menggunakan alat pengujian API bernama **Postman**. Berikut adalah panduan langkah demi langkah lengkap untuk melakukan setup awal dan mengimpor file `postman_collections.json` ke workspace Anda.
+
+### Langkah 1: Registrasi Akun & Download Postman
+Untuk memulai, Anda membutuhkan aplikasi Postman terinstal pada perangkat Anda atau mengaksesnya langsung di web browser.
+1. Kunjungi situs resmi Postman di [www.postman.com](https://www.postman.com/).
+2. Klik tombol **Sign Up for Free** di pojok kanan atas untuk mendaftar akun baru.
+3. Anda dapat mendaftar menggunakan alamat email atau dengan masuk menggunakan akun Google Anda secara instan.
+4. Setelah mendaftar, Anda memiliki dua opsi:
+   - **Postman Desktop App (Direkomendasikan)**: Download aplikasi untuk Windows/macOS/Linux melalui [postman.com/downloads](https://www.postman.com/downloads/) lalu instal.
+   - **Postman Web**: Gunakan secara online langsung dari web browser Anda setelah masuk.
+
+### Langkah 2: Membuat Workspace Baru di Postman
+Workspace adalah area kerja di Postman tempat Anda menyimpan koleksi API agar teratur.
+1. Buka aplikasi Postman Desktop atau masuk di browser.
+2. Di pojok kiri atas, klik menu drop-down bertuliskan **Workspaces**, lalu klik tombol **Create Workspace**.
+3. Berikan konfigurasi berikut pada form workspace baru Anda:
+   - **Name**: Beri nama workspace Anda, misalnya `Pemrograman Mobile 2 - ECommerce`.
+   - **Summary (Opsional)**: Tulis deskripsi singkat, misalnya `Workspace pengujian backend e-commerce`.
+   - **Visibility**: Pilih **Personal** agar hanya Anda yang dapat mengaksesnya, atau **Team** jika bekerja dalam kelompok.
+4. Klik **Create Workspace** di bagian bawah.
+
+### Langkah 3: Melakukan Import `postman_collections.json`
+Sekarang Anda siap memasukkan seluruh kumpulan endpoint API kita ke dalam area kerja.
+1. Pastikan Anda telah mengunduh berkas `postman_collections.json` yang ada pada folder root proyek ini.
+2. Pada pojok kiri atas area Workspace Postman Anda, temukan dan klik tombol **Import** (biasanya berada di panel samping kiri di atas daftar koleksi).
+3. Akan muncul kotak dialog drag-and-drop:
+   - Klik **Files** untuk memilih file secara manual atau cukup drag (tarik) berkas `postman_collections.json` dari File Explorer Windows Anda dan letakkan di dalam kotak tersebut.
+4. Postman secara otomatis mendeteksi format berkas sebagai berkas koleksi Postman v2.1.
+5. Klik tombol **Import** untuk mengonfirmasi. Koleksi bernama **"Ecommerce API - Final Project"** sekarang akan muncul di tab **Collections** di panel kiri Anda.
+
+### Langkah 4: Menyesuaikan Variabel Koleksi (`baseUrl` & `token`)
+Koleksi ini menggunakan variabel internal agar pengujian berjalan dengan mulus tanpa mengetik token berulang kali.
+1. Klik nama koleksi **Ecommerce API - Final Project** pada panel kiri untuk membuka tab pengaturan koleksi utama.
+2. Di layar utama sebelah kanan, klik tab bertuliskan **Variables** di samping tab Authorization.
+3. Anda akan melihat dua baris variabel:
+   - **`baseUrl`**: Memiliki nilai default `http://localhost:3000`. Jika server port Anda berbeda (misal 5000), Anda cukup mengubah kolom *Current Value* variabel ini menjadi `http://localhost:5000`.
+   - **`token`**: Ini adalah penampung token JWT. Kolom *Current Value* awalnya kosong. Ini wajar, jangan diisi manual!
+4. Klik **Save** (Ctrl + S) di pojok kanan atas untuk menyimpan perubahan variabel.
+
+### Langkah 5: Cara Menguji Endpoint & Sistem Auto-Inject Token
+Untuk mulai menguji, pastikan server Express lokal Anda sudah berjalan dengan perintah `npm run dev`.
+1. **Membuat Project (Opsional)**:
+   - Buka folder **Project** -> klik **Create Project** -> klik tombol **Send**. Project ID `1` akan dibuat secara otomatis di database MySQL.
+2. **Registrasi User Baru**:
+   - Buka folder **Auth** -> klik **Register** -> sesuaikan body JSON jika perlu -> klik **Send** untuk mendaftarkan akun mahasiswa.
+3. **Login & Auto-Inject Token (KUNCI UTAMA)**:
+   - Buka folder **Auth** -> klik **Login** -> klik tombol **Send**.
+   - **Di Balik Layar**: Koleksi Postman ini memiliki script otomatis pada bagian *Tests* request Login. Begitu respons sukses (status 200 OK) berisi token JWT didapatkan dari backend, Postman secara otomatis menyimpan token tersebut ke dalam variabel koleksi `token` Anda.
+   - Anda dapat memeriksa tab **Variables** koleksi utama Anda lagi; sekarang kolom *Current Value* variabel `token` telah terisi dengan kode JWT panjang.
+4. **Menguji Endpoint Terproteksi**:
+   - Anda kini bebas mengklik dan mengirim request pada folder **Category**, **Product**, **Cart**, **Payment Method**, dan **Purchase** secara instan dengan mengklik **Send**!
+   - Semua request tersebut dikonfigurasi menggunakan otorisasi bertipe `Inherit auth from parent`, yang artinya mereka secara otomatis melampirkan isi variabel `{{token}}` sebagai header bearer token secara transparan. Anda tidak perlu menyalin token satu-per-satu lagi!

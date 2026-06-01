@@ -9,17 +9,11 @@ import {
 } from "./project.service.js";
 
 import { successResponse } from "../../utils/response.js";
-import { AppError } from "../../utils/app-error.js";
 import { asyncHandler } from "../../utils/async-handler.js";
 
 function parseProject(project: any) {
-
   return {
-    ...project,
-
-    projectTeam: JSON.parse(
-      project.projectTeam
-    )
+    ...project
   };
 }
 
@@ -30,7 +24,6 @@ export const createProjectController =
   ) => {
 
   try {
-
     const project = await createProject(
       req.body
     );
@@ -45,13 +38,11 @@ export const createProjectController =
     return res.status(201).json({
       success: true,
       data: {
-        ...project,
-        projectTeam: JSON.parse(project.projectTeam)
+        ...project
       }
     });
 
   } catch (error) {
-
     return res.status(500).json({
       success: false,
       message: "Failed to create project"
@@ -65,17 +56,14 @@ export const getProjectsController = asyncHandler(async (
 ) => {
 
   try {
-
     const data = await getProjects();
 
     return res.json({
       success: true,
-
       data: data.map(parseProject)
     });
 
   } catch (error) {
-
     return res.status(500).json({
       success: false,
       message: "Failed to get projects"
@@ -89,14 +77,12 @@ export const getProjectByIdController = asyncHandler(async (
 ) => {
 
   try {
-
     const id = Number(req.params.id);
 
     const project =
       await getProjectById(id);
 
     if (!project) {
-
       return res.status(404).json({
         success: false,
         message: "Project not found"
@@ -109,7 +95,6 @@ export const getProjectByIdController = asyncHandler(async (
     });
 
   } catch (error) {
-
     return res.status(500).json({
       success: false,
       message: "Failed to get project"
@@ -123,7 +108,6 @@ export const updateProjectController = asyncHandler(async (
 ) => {
 
   try {
-
     const id = Number(req.params.id);
 
     const project =
@@ -138,7 +122,6 @@ export const updateProjectController = asyncHandler(async (
     });
 
   } catch (error) {
-
     return res.status(500).json({
       success: false,
       message: "Failed to update project"
@@ -152,7 +135,6 @@ export const deleteProjectController = asyncHandler(async (
 ) => {
 
   try {
-
     const id = Number(req.params.id);
 
     const project =
@@ -164,7 +146,6 @@ export const deleteProjectController = asyncHandler(async (
     });
 
   } catch (error) {
-
     return res.status(500).json({
       success: false,
       message: "Failed to delete project"
