@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
+    "postbuild": "mkdir -p tmp && touch tmp/restart.txt",
     "start": "node dist/server.js",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate"
