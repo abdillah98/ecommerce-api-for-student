@@ -9,15 +9,15 @@ async function test() {
     projectTeam: [
       {
         name: "Andi",
-        role: "Developer"
+        nim: "123232"
       },
       {
         name: "Budi",
-        role: "Designer"
+        nim: "121323"
       },
       {
         name: "Citra",
-        role: "Manager"
+        nim: "433221"
       }
     ]
   });

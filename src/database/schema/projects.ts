@@ -1,8 +1,8 @@
-import { mysqlTable, serial, varchar, timestamp, json } from 'drizzle-orm/mysql-core';
+import { mysqlTable, serial, varchar, timestamp, text } from 'drizzle-orm/mysql-core';
 
 export interface TeamMember {
   name: string;
-  role: string;
+  nim: string;
 }
 
 export const projects = mysqlTable("projects", {
@@ -10,6 +10,7 @@ export const projects = mysqlTable("projects", {
   projectTitle: varchar("project_title", { length: 255 }).notNull(),
   projectDescription: varchar("project_description", { length: 255 }),
   projectClass: varchar("project_class", { length: 100 }).notNull(),
-  projectTeam: json('project_team').$type<TeamMember[]>().notNull(),
+  // projectTeam: json('project_team').$type<TeamMember[]>().notNull(),
+  projectTeam: text('project_team').$type<TeamMember[]>().default([]),
   createdAt: timestamp("created_at").defaultNow()
 });
