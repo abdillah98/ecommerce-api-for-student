@@ -12,8 +12,26 @@ import { successResponse } from "../../utils/response.js";
 import { asyncHandler } from "../../utils/async-handler.js";
 
 function parseProject(project: any) {
+  if (!project) return project;
+
+  let team = project.projectTeam;
+  
+  // Rekursif unwrap jika string ter-serialisasi ganda (double-serialized JSON string)
+  while (typeof team === "string") {
+    try {
+      const parsed = JSON.parse(team);
+      if (parsed === team) {
+        break; // Mencegah loop tak terbatas jika string hasil parse identik
+      }
+      team = parsed;
+    } catch (e) {
+      break; // Berhenti jika bukan string JSON yang valid
+    }
+  }
+
   return {
-    ...project
+    ...project,
+    projectTeam: team
   };
 }
 
@@ -37,9 +55,7 @@ export const createProjectController =
 
     return res.status(201).json({
       success: true,
-      data: {
-        ...project
-      }
+      data: parseProject(project)
     });
 
   } catch (error) {
