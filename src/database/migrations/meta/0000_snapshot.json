@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "006e6f52-8f1a-455d-9bd7-cffd857334c6",
+  "id": "28fcaf14-52ce-4c05-8afe-b12e05d0feea",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "carts": {
@@ -16,21 +16,21 @@
         },
         "project_id": {
           "name": "project_id",
-          "type": "bigint",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "user_id": {
           "name": "user_id",
-          "type": "bigint",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "product_id": {
           "name": "product_id",
-          "type": "bigint",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -117,7 +117,7 @@
         },
         "project_id": {
           "name": "project_id",
-          "type": "bigint",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -177,7 +177,7 @@
         },
         "project_id": {
           "name": "project_id",
-          "type": "bigint",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -251,14 +251,14 @@
         },
         "project_id": {
           "name": "project_id",
-          "type": "bigint",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "category_id": {
           "name": "category_id",
-          "type": "bigint",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -381,7 +381,7 @@
         },
         "project_team": {
           "name": "project_team",
-          "type": "json",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -420,14 +420,14 @@
         },
         "purchase_id": {
           "name": "purchase_id",
-          "type": "bigint",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "product_id": {
           "name": "product_id",
-          "type": "bigint",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -499,14 +499,14 @@
         },
         "project_id": {
           "name": "project_id",
-          "type": "bigint",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "user_id": {
           "name": "user_id",
-          "type": "bigint",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -535,7 +535,7 @@
         },
         "payment_method_id": {
           "name": "payment_method_id",
-          "type": "bigint",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -614,7 +614,7 @@
         },
         "project_id": {
           "name": "project_id",
-          "type": "bigint",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false

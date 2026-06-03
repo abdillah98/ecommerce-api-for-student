@@ -5,8 +5,8 @@ import { categories } from "./categories.js";
 
 export const products = mysqlTable("products", {
   id: serial("id").primaryKey(),
-  projectId: bigint("project_id", { mode: 'number' }).notNull().references(() => projects.id),
-  categoryId: bigint("category_id", { mode: 'number' }).references(() => categories.id),
+  projectId: bigint("project_id", { mode: 'number', unsigned: true }).notNull().references(() => projects.id),
+  categoryId: bigint("category_id", { mode: 'number', unsigned: true }).references(() => categories.id),
   productName: varchar("product_name", { length: 100 }).notNull(),
   productDescription: text("product_description"),
   productPrice: decimal("product_price", { precision: 10, scale: 2, mode: 'number' }).notNull(),

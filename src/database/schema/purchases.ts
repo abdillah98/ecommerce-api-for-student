@@ -6,12 +6,12 @@ import { paymentMethods } from "./payment-methods.js";
 
 export const purchases = mysqlTable("purchases", {
   id: serial("id").primaryKey(),
-  projectId: bigint("project_id", { mode: 'number' }).notNull().references(() => projects.id),
-  userId: bigint("user_id", { mode: 'number' }).notNull().references(() => users.id),
+  projectId: bigint("project_id", { mode: 'number', unsigned: true }).notNull().references(() => projects.id),
+  userId: bigint("user_id", { mode: 'number', unsigned: true }).notNull().references(() => users.id),
   totalPrice: decimal("total_price", { precision: 10, scale: 2, mode: 'number' }).notNull(),
   status: varchar("status", { length: 20 }).default("pending"),
   address: text("address").notNull(),
-  paymentMethodId: bigint("payment_method_id", { mode: 'number' })
+  paymentMethodId: bigint("payment_method_id", { mode: 'number', unsigned: true })
     .notNull()
     .references(() => paymentMethods.id),
   createdAt: timestamp("created_at").defaultNow()

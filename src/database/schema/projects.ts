@@ -11,6 +11,6 @@ export const projects = mysqlTable("projects", {
   projectDescription: varchar("project_description", { length: 255 }),
   projectClass: varchar("project_class", { length: 100 }).notNull(),
   // projectTeam: json('project_team').$type<TeamMember[]>().notNull(),
-  projectTeam: text('project_team').$type<TeamMember[]>().default([]),
+  projectTeam: text('project_team').$type<TeamMember[]>().notNull(),
   createdAt: timestamp("created_at").defaultNow()
 });

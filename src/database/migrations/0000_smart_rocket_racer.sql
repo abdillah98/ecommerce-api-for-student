@@ -1,8 +1,8 @@
 CREATE TABLE `carts` (
 	`id` serial AUTO_INCREMENT NOT NULL,
-	`project_id` bigint NOT NULL,
-	`user_id` bigint NOT NULL,
-	`product_id` bigint NOT NULL,
+	`project_id` bigint unsigned NOT NULL,
+	`user_id` bigint unsigned NOT NULL,
+	`product_id` bigint unsigned NOT NULL,
 	`quantity` int DEFAULT 1,
 	`created_at` timestamp DEFAULT (now()),
 	CONSTRAINT `carts_id` PRIMARY KEY(`id`)
@@ -10,7 +10,7 @@ CREATE TABLE `carts` (
 --> statement-breakpoint
 CREATE TABLE `categories` (
 	`id` serial AUTO_INCREMENT NOT NULL,
-	`project_id` bigint NOT NULL,
+	`project_id` bigint unsigned NOT NULL,
 	`category_name` varchar(30) NOT NULL,
 	`created_at` timestamp DEFAULT (now()),
 	CONSTRAINT `categories_id` PRIMARY KEY(`id`)
@@ -18,7 +18,7 @@ CREATE TABLE `categories` (
 --> statement-breakpoint
 CREATE TABLE `payment_methods` (
 	`id` serial AUTO_INCREMENT NOT NULL,
-	`project_id` bigint NOT NULL,
+	`project_id` bigint unsigned NOT NULL,
 	`name` varchar(50) NOT NULL,
 	`type` varchar(10) NOT NULL,
 	`logo_url` text,
@@ -28,8 +28,8 @@ CREATE TABLE `payment_methods` (
 --> statement-breakpoint
 CREATE TABLE `products` (
 	`id` serial AUTO_INCREMENT NOT NULL,
-	`project_id` bigint NOT NULL,
-	`category_id` bigint,
+	`project_id` bigint unsigned NOT NULL,
+	`category_id` bigint unsigned,
 	`product_name` varchar(100) NOT NULL,
 	`product_description` text,
 	`product_price` decimal(10,2) NOT NULL,
@@ -44,15 +44,15 @@ CREATE TABLE `projects` (
 	`project_title` varchar(255) NOT NULL,
 	`project_description` varchar(255),
 	`project_class` varchar(100) NOT NULL,
-	`project_team` json NOT NULL,
+	`project_team` text NOT NULL,
 	`created_at` timestamp DEFAULT (now()),
 	CONSTRAINT `projects_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `purchase_items` (
 	`id` serial AUTO_INCREMENT NOT NULL,
-	`purchase_id` bigint NOT NULL,
-	`product_id` bigint NOT NULL,
+	`purchase_id` bigint unsigned NOT NULL,
+	`product_id` bigint unsigned NOT NULL,
 	`quantity` int NOT NULL,
 	`price` decimal(10,2) NOT NULL,
 	CONSTRAINT `purchase_items_id` PRIMARY KEY(`id`)
@@ -60,19 +60,19 @@ CREATE TABLE `purchase_items` (
 --> statement-breakpoint
 CREATE TABLE `purchases` (
 	`id` serial AUTO_INCREMENT NOT NULL,
-	`project_id` bigint NOT NULL,
-	`user_id` bigint NOT NULL,
+	`project_id` bigint unsigned NOT NULL,
+	`user_id` bigint unsigned NOT NULL,
 	`total_price` decimal(10,2) NOT NULL,
 	`status` varchar(20) DEFAULT 'pending',
 	`address` text NOT NULL,
-	`payment_method_id` bigint NOT NULL,
+	`payment_method_id` bigint unsigned NOT NULL,
 	`created_at` timestamp DEFAULT (now()),
 	CONSTRAINT `purchases_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `users` (
 	`id` serial AUTO_INCREMENT NOT NULL,
-	`project_id` bigint NOT NULL,
+	`project_id` bigint unsigned NOT NULL,
 	`name` varchar(50) NOT NULL,
 	`email` varchar(30) NOT NULL,
 	`password` text NOT NULL,

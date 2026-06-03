@@ -10,13 +10,15 @@ interface CreateProjectDTO {
 }
 
 export async function createProject(payload: CreateProjectDTO) {
+  
+  console.log('payload', payload)
   const [result] = await db
     .insert(projects)
     .values({
       projectTitle: payload.projectTitle,
       projectDescription: payload.projectDescription,
       projectClass: payload.projectClass,
-      projectTeam: payload.projectTeam 
+      projectTeam: JSON.stringify(payload.projectTeam) as any
     });
 
   return await getProjectById(result.insertId);
@@ -42,7 +44,7 @@ export async function updateProject(id: number, payload: CreateProjectDTO) {
       projectTitle: payload.projectTitle,
       projectDescription: payload.projectDescription,
       projectClass: payload.projectClass,
-      projectTeam: payload.projectTeam
+      projectTeam: JSON.stringify(payload.projectTeam) as any
     })
     .where(eq(projects.id, id));
 

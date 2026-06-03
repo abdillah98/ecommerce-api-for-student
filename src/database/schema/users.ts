@@ -4,7 +4,7 @@ import { projects } from "./projects.js";
 
 export const users = mysqlTable("users", {
   id: serial("id").primaryKey(),
-  projectId: bigint("project_id", { mode: 'number' })
+  projectId: bigint("project_id", { mode: 'number', unsigned: true })
     .notNull()
     .references(() => projects.id),
   name: varchar("name", { length: 50 }).notNull(),
